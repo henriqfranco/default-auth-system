@@ -10,13 +10,22 @@ const AuthRepository = {
             throw new Error(`Database query failed: ${error.message}`);
         }
     },
-    async findUser(username, email){
-        const sql = 'SELECT * FROM users_tb WHERE username = ? or email = ?;';
+    async findUserByUsername(username) {
+        const sql = 'SELECT * FROM users_tb WHERE username = ?;';
         try {
-            const [rows] = await connection.promise().execute(sql, [username, email]);
+            const [rows] = await connection.promise().execute(sql, [username]);
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw new Error(`Failed to check for existing user: ${error.message}`);
+        }
+    },
+    async findUserByEmail(email) {
+        const sql = `SELECT * FROM users_tb WHERE email = ?;`;
+        try {
+            const [rows] = await connection.promise().execute(sql, [email]);
+            return rows.length > 0 ? rows[0] : null;
+        } catch (error) {
+            throw new Error(`Failed to check for existing email: ${error.message}`);
         }
     },
     async registerUser(user) {

@@ -39,9 +39,14 @@ const AuthController = {
         }
 
         try {
-            const existingUser = await AuthRepository.findUser(username, email);
-            if (existingUser) {
-                return res.status(400).json({ error: "User with the same username or email already exists." })
+            const existingUsername = await AuthRepository.findUserByUsername(username);
+            if (existingUsername) {
+                return res.status(400).json({ error: "User with the same username already exists." })
+            }
+
+            const existingEmail = await AuthRepository.findUserByEmail(email);
+            if (existingEmail) {
+                return res.status(400).json({ error: "User with the same email already exists." })
             }
 
             const bcrypt = await import('bcrypt');
