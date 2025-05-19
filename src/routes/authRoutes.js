@@ -1,5 +1,6 @@
 import { Router } from "express";
 import AuthController from "../controllers/authController.js";
+import Middlewares from "../middlewares/middlewares.js";
 
 const routes = Router();
 
@@ -8,6 +9,6 @@ routes.get('/', (req, res) => {
 });
 
 routes.get('/users', AuthController.getAllUsers);
-routes.post('/register', AuthController.registerUser);
+routes.post('/register', Middlewares.validateRegister, AuthController.registerUser);
 
 export default routes;
