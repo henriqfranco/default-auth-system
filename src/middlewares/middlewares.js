@@ -1,4 +1,5 @@
 import AuthRepository from "../repositories/authRepository.js";
+import { check, validationResult } from "express-validator";
 
 const Middlewares = {
     validateRegister: async (req, res, next) => {
@@ -36,7 +37,33 @@ const Middlewares = {
         }
 
         next();
-    }
+    },
+    validateLogin: [
+        check('email')
+            .isEmail()
+            .withMessage('Invalid email format')
+            .notEmpty()
+            .withMessage('Email is required'),
+
+        check('password')
+            .notEmpty()
+            .withMessage('Password is required'),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    errors: errors.array().map(err => ({
+                        field: err.param,
+                        message: err.msg
+                    }))
+                });
+            }
+            next();
+        }
+    ]
 }
 
 export default Middlewares;

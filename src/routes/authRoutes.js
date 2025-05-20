@@ -10,5 +10,6 @@ routes.get('/', (req, res) => {
 
 routes.get('/users', AuthController.getAllUsers);
 routes.post('/register', Middlewares.validateRegister, AuthController.registerUser);
+routes.post('/login', Middlewares.validateLogin, AuthController.login);
 
 export default routes;

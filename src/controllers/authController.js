@@ -1,4 +1,6 @@
 import AuthRepository from "../repositories/authRepository.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const AuthController = {
     getAllUsers: async (req, res) => {
@@ -14,9 +16,42 @@ const AuthController = {
             res.status(500).json({ error: "An internal server error occurred." });
         }
     },
+    login: async (req, res) => {
+        try {
+            const { email, password } = req.body;
+            const getUser = await AuthRepository.findUserByEmail(email);
+
+            if (getUser) {
+                const isPasswordValid = await bcrypt.compare(password, getUser.password);
+
+                if (isPasswordValid) {
+                    const token = jwt.sign({ id: getUser.id, username: getUser.username }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
+
+                    return res.status(200).json({
+                        status: 200,
+                        ok: true,
+                        message: "Authorized Access.",
+                        token: token,
+                        user: { id: getUser.id, username: getUser.username },
+                    });
+                }
+            }
+
+            return res.status(401).json({
+                status: 401,
+                ok: false,
+                message: "Invalid email or password."
+            });
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: "An internal server error occurred.",
+            });
+        }
+    },
     registerUser: async (req, res) => {
         try {
-            const bcrypt = await import('bcrypt');
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
             const result = await AuthRepository.registerUser({
@@ -32,7 +67,7 @@ const AuthController = {
             console.error("Error registering user:", error);
             res.status(500).json({ error: "An internal server error occurred." });
         }
-    }
+    },
 };
 
 export default AuthController;
