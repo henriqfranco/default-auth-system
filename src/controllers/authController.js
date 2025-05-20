@@ -36,12 +36,6 @@ const AuthController = {
                     });
                 }
             }
-
-            return res.status(401).json({
-                status: 401,
-                ok: false,
-                message: "Invalid email or password."
-            });
         } catch (error) {
             res.status(500).json({
                 status: 500,
