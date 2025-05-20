@@ -32,7 +32,7 @@ const AuthController = {
                         ok: true,
                         message: "Authorized Access.",
                         token: token,
-                        user: { id: getUser.id, username: getUser.username },
+                        user: { id: getUser.user_id, username: getUser.username },
                     });
                 }
             }
