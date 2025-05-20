@@ -19,24 +19,33 @@ const AuthController = {
     login: async (req, res) => {
         try {
             const { email, password } = req.body;
+
             const getUser = await AuthRepository.findUserByEmail(email);
 
-            if (getUser) {
-                const isPasswordValid = await bcrypt.compare(password, getUser.password);
-
-                if (isPasswordValid) {
-                    const token = jwt.sign({ id: getUser.id, username: getUser.username }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
-
-                    return res.status(200).json({
-                        status: 200,
-                        ok: true,
-                        message: "Authorized Access.",
-                        token: token,
-                        user: { id: getUser.user_id, username: getUser.username },
-                    });
-                }
+            const isPasswordValid = await bcrypt.compare(password, getUser.password);
+            if (!isPasswordValid) {
+                return res.status(401).json({
+                    status: 401,
+                    ok: false,
+                    message: "Invalid email or password.",
+                });
             }
+
+            const token = jwt.sign(
+                { id: getUser.id, username: getUser.username },
+                process.env.JWT_SECRET,
+                { expiresIn: process.env.JWT_EXPIRATION }
+            );
+
+            return res.status(200).json({
+                status: 200,
+                ok: true,
+                message: "Authorized Access.",
+                token: token,
+                user: { id: getUser.id, username: getUser.username },
+            });
         } catch (error) {
+            console.error("Login error:", error);
             res.status(500).json({
                 status: 500,
                 ok: false,
