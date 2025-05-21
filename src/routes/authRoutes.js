@@ -8,7 +8,7 @@ routes.get('/', (req, res) => {
     res.status(200).json({message: "Default auth system."})
 });
 
-routes.get('/users', AuthController.getAllUsers);
+routes.get('/users', Middlewares.verifyToken, AuthController.getAllUsers);
 routes.post('/register', Middlewares.validateRegister, AuthController.registerUser);
 routes.post('/login', Middlewares.validateLogin, AuthController.login);
 
