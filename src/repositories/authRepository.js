@@ -73,6 +73,15 @@ const AuthRepository = {
             throw new Error(`Error updating username: ${error.message}`);
         }
     },
+    async updateEmailByID(id, newEmail) {
+        const sql = 'UPDATE users_tb SET email = ? WHERE user_id = ?;';
+        try {
+            const [result] = await connection.promise().execute(sql, [newEmail, id]);
+            return result;
+        } catch (error) {
+            throw new Error(`Error updating username: ${error.message}`);
+        }
+    },
 }
 
 export default AuthRepository;

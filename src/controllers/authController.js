@@ -137,6 +137,44 @@ const AuthController = {
             });
         }
     },
+    updateEmail: async (req, res) => {
+        try {
+            const { newEmail } = req.body;
+            const userID = req.user.id;
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(newEmail)) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "Invalid email format.",
+                });
+            }
+
+            const existingUser = await AuthRepository.findUserByEmail(newEmail);
+            if (existingUser) {
+                return res.status(409).json({
+                    status: 409,
+                    ok: false,
+                    message: "An account with this email is already registered.",
+                });
+            }
+
+            await AuthRepository.updateEmailByID(userID, newEmail);
+
+            return res.status(200).json({
+                status: 200,
+                ok: true,
+                message: "Email updated successfully.",
+            });
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: "An internal server error ocurred.",
+            });
+        }
+    },
 };
 
 export default AuthController;
