@@ -77,7 +77,7 @@ const AuthController = {
             const userID = req.user.id;
 
             const user = await AuthRepository.findUserByID(userID);
-            if (!user){
+            if (!user) {
                 return res.status(404).json({
                     status: 404,
                     ok: false,
@@ -85,7 +85,7 @@ const AuthController = {
                 });
             }
             const validatePassword = await bcrypt.compare(password, user.password);
-            if (!validatePassword){
+            if (!validatePassword) {
                 return res.status(401).json({
                     status: 401,
                     ok: false,
@@ -107,7 +107,36 @@ const AuthController = {
                 "message": "An internal server error ocurred.",
             });
         }
-    }
+    },
+    updateUsername: async (req, res) => {
+        try {
+            const { newUsername } = req.body;
+            const userID = req.user.id;
+
+            const existingUser = await AuthRepository.findUserByUsername(newUsername);
+            if (existingUser) {
+                return res.status(409).json({
+                    status: 409,
+                    ok: false,
+                    message: "Username is already taken.",
+                });
+            }
+
+            await AuthRepository.updateUsernameByID(userID, newUsername);
+
+            return res.status(200).json({
+                status: 200,
+                ok: true,
+                message: "Username updated successfully.",
+            });
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: "An internal server error ocurred.",
+            });
+        }
+    },
 };
 
 export default AuthController;

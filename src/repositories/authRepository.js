@@ -64,6 +64,15 @@ const AuthRepository = {
             throw new Error(`Error deleting user: ${error.message}`)
         }
     },
-};
+    async updateUsernameByID(id, newUsername) {
+        const sql = 'UPDATE users_tb SET username = ? WHERE user_id = ?;';
+        try {
+            const [result] = await connection.promise().execute(sql, [newUsername, id]);
+            return result;
+        } catch (error) {
+            throw new Error(`Error updating username: ${error.message}`);
+        }
+    },
+}
 
 export default AuthRepository;

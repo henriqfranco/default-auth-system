@@ -12,5 +12,6 @@ routes.get('/users', Middlewares.verifyToken, AuthController.getAllUsers);
 routes.post('/register', Middlewares.validateRegister, AuthController.registerUser);
 routes.post('/login', Middlewares.validateLogin, AuthController.login);
 routes.delete('/account', Middlewares.verifyToken, AuthController.deleteAccount);
+routes.patch('/username', Middlewares.verifyToken, AuthController.updateUsername);
 
 export default routes;
