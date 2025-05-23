@@ -32,7 +32,7 @@ const AuthController = {
             }
 
             const token = jwt.sign(
-                { id: getUser.id, username: getUser.username },
+                { id: getUser.user_id, username: getUser.username },
                 process.env.JWT_SECRET,
                 { expiresIn: process.env.JWT_EXPIRATION }
             );
@@ -42,7 +42,7 @@ const AuthController = {
                 ok: true,
                 message: "Authorized Access.",
                 token: token,
-                user: { id: getUser.id, username: getUser.username },
+                user: { id: getUser.user_id, username: getUser.username },
             });
         } catch (error) {
             console.error("Login error:", error);
