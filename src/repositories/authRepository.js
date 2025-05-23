@@ -28,6 +28,15 @@ const AuthRepository = {
             throw new Error(`Failed to check for existing email: ${error.message}`);
         }
     },
+    async findUserByID(user_id) {
+        const sql = `SELECT * FROM users_tb WHERE user_id = ?;`;
+        try {
+            const [rows] = await connection.promise().execute(sql, [user_id]);
+            return rows.length > 0 ? rows[0] : null;
+        } catch (error) {
+            throw new Error(`Failed to check for existing user: ${error.message}`);
+        }
+    },
     async registerUser(user) {
         const sql = `
         INSERT INTO users_tb (username, password, email, first_name, last_name, date_created)
@@ -44,6 +53,15 @@ const AuthRepository = {
             return { success: true, insertId: result.insertId };
         } catch (error) {
             throw new Error(`Failed to register user: ${error.message}`);
+        }
+    },
+    async deleteUserByID(id) {
+        const sql = 'DELETE FROM users_tb WHERE user_id = ?;';
+        try {
+            const [result] = await connection.promise().execute(sql, [id]);
+            return result;
+        } catch (error) {
+            throw new Error(`Error deleting user: ${error.message}`)
         }
     },
 };

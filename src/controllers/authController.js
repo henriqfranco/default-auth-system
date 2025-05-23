@@ -71,6 +71,43 @@ const AuthController = {
             res.status(500).json({ error: "An internal server error occurred." });
         }
     },
+    deleteAccount: async (req, res) => {
+        try {
+            const { password } = req.body;
+            const userID = req.user.id;
+
+            const user = await AuthRepository.findUserByID(userID);
+            if (!user){
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: "User not found.",
+                });
+            }
+            const validatePassword = await bcrypt.compare(password, user.password);
+            if (!validatePassword){
+                return res.status(401).json({
+                    status: 401,
+                    ok: false,
+                    message: "Invalid password."
+                });
+            }
+
+            await AuthRepository.deleteUserByID(userID);
+
+            return res.status(200).json({
+                status: 200,
+                ok: true,
+                message: "Account deleted successfully.",
+            });
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                "message": "An internal server error ocurred.",
+            });
+        }
+    }
 };
 
 export default AuthController;
