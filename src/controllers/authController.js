@@ -31,6 +31,8 @@ const AuthController = {
                 });
             }
 
+            await AuthRepository.updateLastLogin(getUser.user_id);
+
             const token = jwt.sign(
                 { id: getUser.user_id, username: getUser.username },
                 process.env.JWT_SECRET,

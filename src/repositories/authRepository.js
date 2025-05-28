@@ -82,6 +82,16 @@ const AuthRepository = {
             throw new Error(`Error updating username: ${error.message}`);
         }
     },
+    async updateLastLogin(id) {
+        const sql = 'UPDATE users_tb SET last_login = NOW() WHERE user_id = ?;';
+        try {
+            console.log(id)
+            const [result] = await connection.promise().execute(sql, [id]);
+            return result;
+        } catch (error) {
+            throw new Error(`Error updating last login date: ${error.message}`);
+        }
+    }
 }
 
 export default AuthRepository;
