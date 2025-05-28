@@ -91,7 +91,32 @@ const AuthRepository = {
         } catch (error) {
             throw new Error(`Error updating last login date: ${error.message}`);
         }
-    }
+    },
+    async updateFullName(id, firstName = null, lastName = null) {
+        let sql = 'UPDATE users_tb SET ';
+        const params = [];
+
+        if (firstName !== null) {
+            sql += 'first_name = ?';
+            params.push(firstName);
+        }
+
+        if (lastName !== null) {
+            if (params.length > 0) sql += ', ';
+            sql += 'last_name = ?';
+            params.push(lastName);
+        }
+
+        sql += ' WHERE user_id = ?;';
+        params.push(id);
+
+        try {
+            const [result] = await connection.promise().execute(sql, params);
+            return result;
+        } catch (error) {
+            throw new Error(`Error updating full name: ${error.message}`);
+        }
+    },
 }
 
 export default AuthRepository;

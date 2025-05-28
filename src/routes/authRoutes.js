@@ -17,5 +17,6 @@ routes.delete('/account', Middlewares.verifyToken, AuthController.deleteAccount)
 
 routes.patch('/username', Middlewares.verifyToken, AuthController.updateUsername);
 routes.patch('/email', Middlewares.verifyToken, AuthController.updateEmail);
+routes.patch('/fullname', Middlewares.verifyToken, AuthController.updateFullName);
 
 export default routes;

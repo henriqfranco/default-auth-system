@@ -177,6 +177,61 @@ const AuthController = {
             });
         }
     },
+    updateFullName: async (req, res) => {
+        try {
+            const { newFirstName, newLastName } = req.body;
+            const userID = req.user.id;
+
+            if (!newFirstName && !newLastName) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "At least one of newFirstName or newLastName must be provided.",
+                });
+            }
+
+            const currentUser = await AuthRepository.findUserByID(userID);
+
+            if (!currentUser) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: "User not found.",
+                });
+            }
+
+            if (newFirstName === currentUser.first_name) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "The submitted first name is the same as the current one.",
+                });
+            }
+
+            if (newLastName === currentUser.last_name) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "The submitted last name is the same as the current one.",
+                });
+            }
+
+            await AuthRepository.updateFullName(userID, newFirstName, newLastName);
+
+            return res.status(200).json({
+                status: 200,
+                ok: true,
+                message: "Name updated successfully.",
+            });
+        } catch (error) {
+            console.error("Error updating full name:", error);
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: "An internal server error occurred.",
+            });
+        }
+    },
 };
 
 export default AuthController;
