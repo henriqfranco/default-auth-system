@@ -117,6 +117,15 @@ const AuthRepository = {
             throw new Error(`Error updating full name: ${error.message}`);
         }
     },
+    async updatePasswordByID(id, newPassword) {
+        const sql = 'UPDATE users_tb SET password = ? WHERE user_id = ?;';
+        try {
+            const [result] = await connection.promise().execute(sql, [newPassword, id]);
+            return result;
+        } catch (error) {
+            throw new Error(`Error updating password: ${error.message}`);
+        }
+    },
 }
 
 export default AuthRepository;

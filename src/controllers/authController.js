@@ -139,6 +139,81 @@ const AuthController = {
             });
         }
     },
+    updatePassword: async (req, res) => {
+        try {
+            const { newPassword } = req.body;
+            const userID = req.user.id;
+
+            if (!newPassword || newPassword.trim() === "") {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "Password cannot be empty.",
+                });
+            }
+
+            if (newPassword.length < 8) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "Password must be at least 8 characters long.",
+                });
+            }
+
+            if (!/\d/.test(newPassword)) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "Password must contain at least one number.",
+                });
+            }
+
+            const currentUser = await AuthRepository.findUserByID(userID);
+            if (!currentUser) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: "User not found.",
+                });
+            }
+
+            const isSamePassword = await bcrypt.compare(newPassword, currentUser.password);
+            if (isSamePassword) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "You cannot use the same password as your current one.",
+                });
+            }
+
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+            await AuthRepository.updatePasswordByID(userID, hashedPassword);
+
+            return res.status(200).json({
+                status: 200,
+                ok: true,
+                message: "Password updated successfully.",
+                token: null,
+            });
+        } catch (error) {
+            console.error("Error updating password:", error);
+
+            if (error.message.includes("user not found")) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: "User not found.",
+                });
+            }
+
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: "An internal server error occurred.",
+            });
+        }
+    },
     updateEmail: async (req, res) => {
         try {
             const { newEmail } = req.body;
