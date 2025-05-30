@@ -4,7 +4,11 @@ import jwt from "jsonwebtoken";
 
 const Middlewares = {
     validateRegister: [
-        check("username").notEmpty().withMessage("Username is required."),
+        check("username")
+            .notEmpty().withMessage("Username is required.")
+            .trim()
+            .escape()
+            .isLength({ min: 3, max: 30 }).withMessage("Username must be 3-30 characters"),
         check("password")
             .notEmpty().withMessage("Password is required.")
             .isLength({ min: 8 }).withMessage("Password must be at least 8 characters long.")

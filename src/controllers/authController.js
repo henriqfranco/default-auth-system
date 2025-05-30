@@ -1,6 +1,7 @@
 import AuthRepository from "../repositories/authRepository.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { config } from "../config/config.js";
 
 const AuthController = {
     getAllUsers: async (req, res) => {
@@ -12,8 +13,11 @@ const AuthController = {
                 res.status(404).json({ error: "No users found." });
             }
         } catch (error) {
-            console.error("Error fetching users:", error);
-            res.status(500).json({ error: "An internal server error occurred." });
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                "message": "An internal server error ocurred.",
+            });
         }
     },
     login: async (req, res) => {
@@ -35,8 +39,8 @@ const AuthController = {
 
             const token = jwt.sign(
                 { id: getUser.user_id, username: getUser.username },
-                process.env.JWT_SECRET,
-                { expiresIn: process.env.JWT_EXPIRATION }
+                config.jwt.secret,
+                { expiresIn: config.jwt.expiration }
             );
 
             return res.status(200).json({
@@ -69,8 +73,11 @@ const AuthController = {
 
             res.status(201).json({ message: "User registered successfully", userId: result.insertId });
         } catch (error) {
-            console.error("Error registering user:", error);
-            res.status(500).json({ error: "An internal server error occurred." });
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                "message": "An internal server error ocurred.",
+            });
         }
     },
     deleteAccount: async (req, res) => {
@@ -114,6 +121,15 @@ const AuthController = {
         try {
             const { newUsername } = req.body;
             const userID = req.user.id;
+
+            const currentUser = await AuthRepository.findUserByID(userID);
+            if (newUsername === currentUser.username) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "The submitted username is the same as the current one.",
+                });
+            }
 
             const existingUser = await AuthRepository.findUserByUsername(newUsername);
             if (existingUser) {
@@ -225,6 +241,15 @@ const AuthController = {
                     status: 400,
                     ok: false,
                     message: "Invalid email format.",
+                });
+            }
+
+            const currentUser = await AuthRepository.findUserByID(userID);
+            if (newEmail === currentUser.email) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "The submitted email is the same as the current one.",
                 });
             }
 
