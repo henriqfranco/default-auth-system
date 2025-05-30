@@ -85,7 +85,6 @@ const AuthRepository = {
     async updateLastLogin(id) {
         const sql = 'UPDATE users_tb SET last_login = NOW() WHERE user_id = ?;';
         try {
-            console.log(id)
             const [result] = await connection.promise().execute(sql, [id]);
             return result;
         } catch (error) {
