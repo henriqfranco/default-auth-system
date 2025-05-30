@@ -43,14 +43,14 @@ const AuthRepository = {
         VALUES (?, ?, ?, ?, ?, NOW());
     `;
         try {
-            const [result] = await connection.promise().execute(sql, [
+            const [rows] = await connection.promise().execute(sql, [
                 user.username,
                 user.password,
                 user.email,
                 user.first_name,
                 user.last_name,
             ]);
-            return { success: true, insertId: result.insertId };
+            return { success: true, insertId: rows.insertId };
         } catch (error) {
             throw new Error(`Failed to register user: ${error.message}`);
         }
@@ -58,8 +58,8 @@ const AuthRepository = {
     async deleteUserByID(id) {
         const sql = 'DELETE FROM users_tb WHERE user_id = ?;';
         try {
-            const [result] = await connection.promise().execute(sql, [id]);
-            return result;
+            const [rows] = await connection.promise().execute(sql, [id]);
+            return rows;
         } catch (error) {
             throw new Error(`Error deleting user: ${error.message}`)
         }
@@ -67,8 +67,8 @@ const AuthRepository = {
     async updateUsernameByID(id, newUsername) {
         const sql = 'UPDATE users_tb SET username = ? WHERE user_id = ?;';
         try {
-            const [result] = await connection.promise().execute(sql, [newUsername, id]);
-            return result;
+            const [rows] = await connection.promise().execute(sql, [newUsername, id]);
+            return rows;
         } catch (error) {
             throw new Error(`Error updating username: ${error.message}`);
         }
@@ -76,8 +76,8 @@ const AuthRepository = {
     async updateEmailByID(id, newEmail) {
         const sql = 'UPDATE users_tb SET email = ? WHERE user_id = ?;';
         try {
-            const [result] = await connection.promise().execute(sql, [newEmail, id]);
-            return result;
+            const [rows] = await connection.promise().execute(sql, [newEmail, id]);
+            return rows;
         } catch (error) {
             throw new Error(`Error updating username: ${error.message}`);
         }
@@ -85,8 +85,8 @@ const AuthRepository = {
     async updateLastLogin(id) {
         const sql = 'UPDATE users_tb SET last_login = NOW() WHERE user_id = ?;';
         try {
-            const [result] = await connection.promise().execute(sql, [id]);
-            return result;
+            const [rows] = await connection.promise().execute(sql, [id]);
+            return rows;
         } catch (error) {
             throw new Error(`Error updating last login date: ${error.message}`);
         }
@@ -110,8 +110,8 @@ const AuthRepository = {
         params.push(id);
 
         try {
-            const [result] = await connection.promise().execute(sql, params);
-            return result;
+            const [rows] = await connection.promise().execute(sql, params);
+            return rows;
         } catch (error) {
             throw new Error(`Error updating full name: ${error.message}`);
         }
@@ -119,8 +119,8 @@ const AuthRepository = {
     async updatePasswordByID(id, newPassword) {
         const sql = 'UPDATE users_tb SET password = ? WHERE user_id = ?;';
         try {
-            const [result] = await connection.promise().execute(sql, [newPassword, id]);
-            return result;
+            const [rows] = await connection.promise().execute(sql, [newPassword, id]);
+            return rows;
         } catch (error) {
             throw new Error(`Error updating password: ${error.message}`);
         }
@@ -128,8 +128,8 @@ const AuthRepository = {
     async deactivateUserById(id) {
         const sql = 'UPDATE users_tb SET user_status = 0 WHERE user_id = ?;';
         try {
-            const [result] = await connection.promise().execute(sql, [id]);
-            return result;
+            const [rows] = await connection.promise().execute(sql, [id]);
+            return rows;
         } catch (error) {
             throw new Error(`Error deactivating account: ${error.message}`);
         }
@@ -137,8 +137,8 @@ const AuthRepository = {
     async reactivateUserByEmail(email) {
         const sql = 'UPDATE users_tb SET user_status = 1 WHERE email = ?;';
         try {
-            const [result] = await connection.promise().execute(sql, [email]);
-            return result;
+            const [rows] = await connection.promise().execute(sql, [email]);
+            return rows;
         } catch (error) {
             throw new Error(`Error reactivating account: ${error.message}`);
         }
@@ -146,8 +146,8 @@ const AuthRepository = {
     async isAccountActivated(id){
         const sql = 'SELECT user_status FROM users_tb WHERE user_id = ?;';
         try{
-            const [result] = await connection.promise().execute(sql, [id]);
-            return result.length > 0 ? result[0].user_status : null;
+            const [rows] = await connection.promise().execute(sql, [id]);
+            return rows.length > 0 ? rows[0].user_status : null;
         } catch (error) {
             throw new Error(`Error checking user status: ${error.message}`);
         }
