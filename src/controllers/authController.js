@@ -16,7 +16,7 @@ const AuthController = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                "message": "An internal server error ocurred.",
+                message: `An internal server error ocurred: ${error.message}`,
             });
         }
     },
@@ -67,11 +67,10 @@ const AuthController = {
                 user: { id: getUser.user_id, username: getUser.username },
             });
         } catch (error) {
-            console.error("Login error:", error);
             res.status(500).json({
                 status: 500,
                 ok: false,
-                message: "An internal server error occurred.",
+                message: `An internal server error ocurred: ${error.message}`,
             });
         }
     },
@@ -112,7 +111,7 @@ const AuthController = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                "message": "An internal server error ocurred.",
+                message: `An internal server error ocurred: ${error.message}`,
             });
         }
     },
@@ -149,7 +148,7 @@ const AuthController = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                "message": "An internal server error ocurred.",
+                message: `An internal server error ocurred: ${error.message}`,
             });
         }
     },
@@ -195,7 +194,7 @@ const AuthController = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                "message": "An internal server error ocurred.",
+                message: `An internal server error ocurred: ${error.message}`,
             });
         }
     },
@@ -238,7 +237,7 @@ const AuthController = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                "message": "An internal server error ocurred.",
+                message: `An internal server error ocurred: ${error.message}`,
             });
         }
     },
@@ -276,7 +275,7 @@ const AuthController = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                message: "An internal server error ocurred.",
+                message: `An internal server error ocurred: ${error.message}`,
             });
         }
     },
@@ -338,20 +337,10 @@ const AuthController = {
                 token: null,
             });
         } catch (error) {
-            console.error("Error updating password:", error);
-
-            if (error.message.includes("user not found")) {
-                return res.status(404).json({
-                    status: 404,
-                    ok: false,
-                    message: "User not found.",
-                });
-            }
-
             res.status(500).json({
                 status: 500,
                 ok: false,
-                message: "An internal server error occurred.",
+                message: `An internal server error ocurred: ${error.message}`,
             });
         }
     },
@@ -398,7 +387,7 @@ const AuthController = {
             res.status(500).json({
                 status: 500,
                 ok: false,
-                message: "An internal server error ocurred.",
+                message: `An internal server error ocurred: ${error.message}`,
             });
         }
     },
@@ -449,11 +438,10 @@ const AuthController = {
                 message: "Name updated successfully.",
             });
         } catch (error) {
-            console.error("Error updating full name:", error);
             res.status(500).json({
                 status: 500,
                 ok: false,
-                message: "An internal server error occurred.",
+                message: `An internal server error ocurred: ${error.message}`,
             });
         }
     },

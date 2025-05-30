@@ -1,5 +1,4 @@
 import { check, validationResult } from "express-validator";
-import AuthRepository from "../repositories/authRepository.js";
 import jwt from "jsonwebtoken";
 
 const Middlewares = {
