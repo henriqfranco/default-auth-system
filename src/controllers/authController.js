@@ -34,7 +34,7 @@ const AuthController = {
                 });
             }
 
-            if (!getUser.is_active) {
+            if (!getUser.user_status) {
                 return res.status(403).json({
                     status: 403,
                     ok: false,
@@ -167,7 +167,7 @@ const AuthController = {
                 });
             }
 
-            if (!user.is_active) {
+            if (!user.user_status) {
                 return res.status(400).json({
                     status: 400,
                     ok: false,
