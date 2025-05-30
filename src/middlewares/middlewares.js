@@ -19,19 +19,6 @@ const Middlewares = {
         check("first_name").notEmpty().withMessage("First name is required."),
         check("last_name").notEmpty().withMessage("Last name is required."),
 
-        check("username").custom(async (username) => {
-            const existingUsername = await AuthRepository.findUserByUsername(username);
-            if (existingUsername) {
-                throw new Error("User with the same username already exists.");
-            }
-        }),
-        check("email").custom(async (email) => {
-            const existingEmail = await AuthRepository.findUserByEmail(email);
-            if (existingEmail) {
-                throw new Error("User with the same email already exists.");
-            }
-        }),
-
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -47,17 +34,30 @@ const Middlewares = {
             .isEmail().withMessage("Invalid email format."),
         check("password").notEmpty().withMessage("Password is required."),
 
-        check("email").custom(async (email) => {
-            const existingEmail = await AuthRepository.findUserByEmail(email);
-            if (!existingEmail) {
-                throw new Error("Invalid email or password.");
-            }
-        }),
-
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array().map(err => ({ field: err.param, message: err.msg })) });
+            }
+            next();
+        }
+    ],
+    validateReactivate: [
+        check("email")
+            .notEmpty().withMessage("Email is required.")
+            .isEmail().withMessage("Invalid email format."),
+        check("password")
+            .notEmpty().withMessage("Password is required."),
+
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    errors: errors.array().map(err => ({
+                        field: err.param,
+                        message: err.msg
+                    }))
+                });
             }
             next();
         }

@@ -26,6 +26,22 @@ const AuthController = {
 
             const getUser = await AuthRepository.findUserByEmail(email);
 
+            if (!getUser) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "Invalid email or password.",
+                });
+            }
+
+            if (!getUser.is_active) {
+                return res.status(403).json({
+                    status: 403,
+                    ok: false,
+                    message: "Account is deactivated. Please reactivate your account.",
+                });
+            }
+
             const isPasswordValid = await bcrypt.compare(password, getUser.password);
             if (!isPasswordValid) {
                 return res.status(401).json({
@@ -61,6 +77,26 @@ const AuthController = {
     },
     registerUser: async (req, res) => {
         try {
+            const { username, email } = req.body;
+
+            const checkUsername = await AuthRepository.findUserByUsername(username);
+            if (checkUsername) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "User with the same username already exists.",
+                });
+            }
+
+            const checkEmail = await AuthRepository.findUserByEmail(email);
+            if (checkEmail) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "User with the same email already exists.",
+                });
+            }
+
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
             const result = await AuthRepository.registerUser({
@@ -108,6 +144,95 @@ const AuthController = {
                 status: 200,
                 ok: true,
                 message: "Account deleted successfully.",
+            });
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                "message": "An internal server error ocurred.",
+            });
+        }
+    },
+    deactivateAccount: async (req, res) => {
+        try {
+            const { password } = req.body;
+            const userID = req.user.id;
+
+            const user = await AuthRepository.findUserByID(userID);
+            if (!user) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: "User not found.",
+                });
+            }
+
+            if (!user.is_active) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "Account is already deactivated.",
+                });
+            }
+
+            const validatePassword = await bcrypt.compare(password, user.password);
+            if (!validatePassword) {
+                return res.status(401).json({
+                    status: 401,
+                    ok: false,
+                    message: "Invalid password."
+                });
+            }
+
+            await AuthRepository.deactivateUserById(userID);
+
+            return res.status(200).json({
+                status: 200,
+                ok: true,
+                message: "Account deactivated successfully.",
+            });
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                "message": "An internal server error ocurred.",
+            });
+        }
+    },
+    reactivateAccount: async (req, res) => {
+        try {
+            const { email, password } = req.body;
+
+            const user = await AuthRepository.findUserByEmail(email);
+            if (!user) {
+                return res.status(404).json({
+                    status: 404,
+                    ok: false,
+                    message: "Invalid email or password.",
+                });
+            }
+            if (user.user_status === 1) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "Account is already active.",
+                });
+            }
+            const validatePassword = await bcrypt.compare(password, user.password);
+            if (!validatePassword) {
+                return res.status(401).json({
+                    status: 401,
+                    ok: false,
+                    message: "Invalid password."
+                });
+            }
+
+            await AuthRepository.reactivateUserByEmail(email);
+
+            return res.status(200).json({
+                status: 200,
+                ok: true,
+                message: "Account reactivated successfully.",
             });
         } catch (error) {
             res.status(500).json({

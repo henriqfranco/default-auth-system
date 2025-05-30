@@ -126,6 +126,33 @@ const AuthRepository = {
             throw new Error(`Error updating password: ${error.message}`);
         }
     },
+    async deactivateUserById(id) {
+        const sql = 'UPDATE users_tb SET user_status = 0 WHERE user_id = ?;';
+        try {
+            const [result] = await connection.promise().execute(sql, [id]);
+            return result;
+        } catch (error) {
+            throw new Error(`Error deactivating account: ${error.message}`);
+        }
+    },
+    async reactivateUserByEmail(email) {
+        const sql = 'UPDATE users_tb SET user_status = 1 WHERE email = ?;';
+        try {
+            const [result] = await connection.promise().execute(sql, [email]);
+            return result;
+        } catch (error) {
+            throw new Error(`Error reactivating account: ${error.message}`);
+        }
+    },
+    async isAccountActivated(id){
+        const sql = 'SELECT user_status FROM users_tb WHERE user_id = ?;';
+        try{
+            const [result] = await connection.promise().execute(sql, [id]);
+            return result.length > 0 ? result[0].user_status : null;
+        } catch (error) {
+            throw new Error(`Error checking user status: ${error.message}`);
+        }
+    },
 }
 
 export default AuthRepository;

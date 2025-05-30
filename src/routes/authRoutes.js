@@ -12,6 +12,8 @@ routes.get('/users', Middlewares.verifyToken, AuthController.getAllUsers);
 
 routes.post('/register', Middlewares.validateRegister, AuthController.registerUser);
 routes.post('/login', Middlewares.validateLogin, AuthController.login);
+routes.post('/deactivate', Middlewares.verifyToken, AuthController.deactivateAccount);
+routes.post('/reactivate', AuthController.reactivateAccount);
 
 routes.delete('/account', Middlewares.verifyToken, AuthController.deleteAccount);
 
