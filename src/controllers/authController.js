@@ -346,15 +346,31 @@ const AuthController = {
     },
     updateEmail: async (req, res) => {
         try {
-            const { newEmail } = req.body;
+            const { currentEmail, newEmail } = req.body;
             const userID = req.user.id;
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(currentEmail)) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "Invalid email format.",
+                });
+            }
             if (!emailRegex.test(newEmail)) {
                 return res.status(400).json({
                     status: 400,
                     ok: false,
                     message: "Invalid email format.",
+                });
+            }
+
+            const oldEmail = await AuthRepository.findUserByEmail(currentEmail);
+            if (!oldEmail) {
+                return res.status(400).json({
+                    status: 400,
+                    ok: false,
+                    message: "Current email confirmation required.",
                 });
             }
 
