@@ -9,6 +9,7 @@ routes.get('/', (req, res) => {
 });
 
 routes.get('/users', Middlewares.verifyToken, AuthController.getAllUsers);
+routes.get('/user', Middlewares.verifyToken, AuthController.getCurrentUser);
 
 routes.post('/register', Middlewares.validateRegister, AuthController.registerUser);
 routes.post('/login', Middlewares.validateLogin, AuthController.login);

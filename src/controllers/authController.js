@@ -20,6 +20,24 @@ const AuthController = {
             });
         }
     },
+    getCurrentUser: async (req, res) => {
+        try {
+            const userID = req.user.id;
+
+            const data = await AuthRepository.getCurrentUserInfo(userID);
+            if (data && data.length > 0) {
+                res.status(200).json(data);
+            } else {
+                res.status(404).json({ error: "No users found." });
+            }
+        } catch (error) {
+            res.status(500).json({
+                status: 500,
+                ok: false,
+                message: `An internal server error ocurred: ${error.message}`,
+            });
+        }
+    },
     login: async (req, res) => {
         try {
             const { email, password } = req.body;

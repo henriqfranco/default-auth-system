@@ -10,6 +10,15 @@ const AuthRepository = {
             throw new Error(`Database query failed: ${error.message}`);
         }
     },
+    async getCurrentUserInfo(id) {
+        const sql = 'SELECT user_id, username, email, first_name, last_name, date_created, last_login, user_role, user_status FROM users_tb WHERE user_id = ?;';
+        try {
+            const [rows] = await connection.promise().execute(sql, [id]);
+            return rows.length > 0 ? rows[0] : null;
+        } catch (error) {
+            throw new Error(`Database query failed: ${error.message}`);
+        }
+    },
     async findUserByUsername(username) {
         const sql = 'SELECT username FROM users_tb WHERE username = ?;';
         try {
@@ -143,9 +152,9 @@ const AuthRepository = {
             throw new Error(`Error reactivating account: ${error.message}`);
         }
     },
-    async isAccountActivated(id){
+    async isAccountActivated(id) {
         const sql = 'SELECT user_status FROM users_tb WHERE user_id = ?;';
-        try{
+        try {
             const [rows] = await connection.promise().execute(sql, [id]);
             return rows.length > 0 ? rows[0].user_status : null;
         } catch (error) {
