@@ -2,16 +2,16 @@ import connection from "../database/mysqldb.js";
 
 const AuthRepository = {
     async getAllUsers() {
-        const sql = 'SELECT * FROM users_tb;';
+        const sql = 'SELECT user_id, username, email, first_name, last_name, date_created, last_login, user_role, user_status FROM users_tb;';
         try {
             const [rows] = await connection.promise().execute(sql);
-            return rows;
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw new Error(`Database query failed: ${error.message}`);
         }
     },
     async findUserByUsername(username) {
-        const sql = 'SELECT * FROM users_tb WHERE username = ?;';
+        const sql = 'SELECT username FROM users_tb WHERE username = ?;';
         try {
             const [rows] = await connection.promise().execute(sql, [username]);
             return rows.length > 0 ? rows[0] : null;
@@ -20,7 +20,7 @@ const AuthRepository = {
         }
     },
     async findUserByEmail(email) {
-        const sql = `SELECT * FROM users_tb WHERE email = ?;`;
+        const sql = `SELECT user_id, email, password, user_status FROM users_tb WHERE email = ?;`;
         try {
             const [rows] = await connection.promise().execute(sql, [email]);
             return rows.length > 0 ? rows[0] : null;
@@ -59,7 +59,7 @@ const AuthRepository = {
         const sql = 'DELETE FROM users_tb WHERE user_id = ?;';
         try {
             const [rows] = await connection.promise().execute(sql, [id]);
-            return rows;
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw new Error(`Error deleting user: ${error.message}`)
         }
@@ -68,7 +68,7 @@ const AuthRepository = {
         const sql = 'UPDATE users_tb SET username = ? WHERE user_id = ?;';
         try {
             const [rows] = await connection.promise().execute(sql, [newUsername, id]);
-            return rows;
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw new Error(`Error updating username: ${error.message}`);
         }
@@ -77,7 +77,7 @@ const AuthRepository = {
         const sql = 'UPDATE users_tb SET email = ? WHERE user_id = ?;';
         try {
             const [rows] = await connection.promise().execute(sql, [newEmail, id]);
-            return rows;
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw new Error(`Error updating username: ${error.message}`);
         }
@@ -86,7 +86,7 @@ const AuthRepository = {
         const sql = 'UPDATE users_tb SET last_login = NOW() WHERE user_id = ?;';
         try {
             const [rows] = await connection.promise().execute(sql, [id]);
-            return rows;
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw new Error(`Error updating last login date: ${error.message}`);
         }
@@ -111,7 +111,7 @@ const AuthRepository = {
 
         try {
             const [rows] = await connection.promise().execute(sql, params);
-            return rows;
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw new Error(`Error updating full name: ${error.message}`);
         }
@@ -120,7 +120,7 @@ const AuthRepository = {
         const sql = 'UPDATE users_tb SET password = ? WHERE user_id = ?;';
         try {
             const [rows] = await connection.promise().execute(sql, [newPassword, id]);
-            return rows;
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw new Error(`Error updating password: ${error.message}`);
         }
@@ -129,7 +129,7 @@ const AuthRepository = {
         const sql = 'UPDATE users_tb SET user_status = 0 WHERE user_id = ?;';
         try {
             const [rows] = await connection.promise().execute(sql, [id]);
-            return rows;
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw new Error(`Error deactivating account: ${error.message}`);
         }
@@ -138,7 +138,7 @@ const AuthRepository = {
         const sql = 'UPDATE users_tb SET user_status = 1 WHERE email = ?;';
         try {
             const [rows] = await connection.promise().execute(sql, [email]);
-            return rows;
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw new Error(`Error reactivating account: ${error.message}`);
         }
