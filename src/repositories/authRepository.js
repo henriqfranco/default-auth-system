@@ -14,7 +14,7 @@ const AuthRepository = {
         const sql = 'SELECT user_id, username, email, first_name, last_name, date_created, last_login, user_role, user_status FROM users_tb WHERE user_id = ?;';
         try {
             const [rows] = await connection.promise().execute(sql, [id]);
-            return rows.length > 0 ? rows[0] : null;
+            return rows;
         } catch (error) {
             throw new Error(`Database query failed: ${error.message}`);
         }
